@@ -5,7 +5,7 @@ const cors = require('cors');
 require('dotenv').config()
 
 const app = express();
-const port = process.env.PORT || 7000;
+const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
@@ -22,6 +22,10 @@ async function  run(){
        
         const database = client.db("tourism");
     const serviceCollection = database.collection("services");
+    const orderCollection = database.collection('orders');
+
+    // mongodb 
+
     // GET API
     app.get('/services', async (req, res) => {
         const cursor = serviceCollection.find({});
@@ -31,7 +35,7 @@ async function  run(){
         res.send(services);
     });
 
-
+//nodenmongo db get data
 
     // post api
 
@@ -44,6 +48,25 @@ async function  run(){
         res.json(result)
     });
 
+
+// get all orders 
+app.get('/allOrders', async (req, res) => {
+    const cursor = orderCollection.find({});
+   
+    const services = await cursor.toArray();
+    console.log(services)
+    res.send(services);
+});
+
+
+
+//    post all orders 
+app.post('/orders', async (req, res) => {
+    const order = req.body;
+    const result = await orderCollection.insertOne(order);
+    res.json(result);
+})
+
     }
 finally{
 
@@ -53,9 +76,13 @@ finally{
 
 run().catch(console.dir)
 
+
+
 app.get('/',(req,res)=>{
 res.send('welcom to tourism dabase')
 })
+
+
 
 app.listen(port, () => {
     console.log('Running Genius Server on port', port);
